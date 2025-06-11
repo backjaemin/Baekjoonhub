@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baekjoon Hub</title>
+    <link rel="stylesheet" href="compare.css">
+    <link rel="stylesheet" href="nav.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+
+<body>
+    <div class="wrap">
+        <form action="">
+            <div class="baekjoon-wrap">
+                <label for="user1">사용자1 백준아이디 :</label>
+                <input class="" id="user1" type="text" placeholder="원하는 사용자의 아이디를 입력해주세요"/>
+            </div>
+            
+    
+            <hr>
+
+
+            <div class="baekjoon-wrap" style="margin: 0px;">
+                <label for="user2">사용자2 백준아이디 :</label>
+                <input class="" id="user2" type="text" placeholder="비교할 사용자의 아이디를 입력해주세요" />
+            </div>
+            <input class="compare-button" type="button" value="비교하기" onclick="displayResponse1()">
+        </form>
+        
+        <div id="compare-wrap" class="compare-wrap">
+            <div class="compare-half" id="compare-left">
+                <h4 class="info">아이디 : <span id="user1-id">??</span></h4>
+                <hr style="width: 80%;">
+
+                <div class="chart-card">
+                    <canvas style="margin: auto;" id="pieChart1"></canvas>
+                </div>
+
+                <h4 class="info">푼 문제 수 : <span id="user1-solve">??</span></h4>
+                <h4 class="info">레이팅 : <span id="user1-rating">??</span></h4>
+                <h4 class="info">랭킹 : <span id="user1-ranking">??</span></h4>
+            </div>
+            <div class="compare-half" id="compare-right">
+                <h4 class="info">아이디 : <span id="user2-id">??</span></h4>
+                <hr style="width: 80%;">
+
+                <div class="chart-card">
+                    <canvas style="margin: auto;" id="pieChart2"></canvas>
+                </div>
+
+                <h4 class="info">푼 문제 수 : <span id="user2-solve">??</span></h4>
+                <h4 class="info">레이팅 : <span id="user2-rating">??</span></h4>
+                <h4 class="info">랭킹 : <span id="user2-ranking">??</span></h4>
+            </div>
+        </div>
+        
+        <nav>
+            <div class="nav-mid" onclick="location.href='problem.html'">
+                문제찾기
+            </div>
+            <div class="nav-mid" onclick="location.href='strick.html'">
+                잔디보기
+            </div>
+            <div class="nav-right" style="background-color: rgb(130, 130, 142);" onclick="location.href='compare.html'">
+                비교하기
+            </div>
+        </nav>
+    </div>
+    
+    <script>
+
+        var xhr1 = new XMLHttpRequest();
+            xhr1.withCredentials = true;
+            xhr1.addEventListener("readystatechange", function () {
+                if (this.readyState === 4) {
+                    try {
+                        const parsed = JSON.parse(this.responseText);
+                        if (!parsed.handle) {
+                            throw new Error("존재하지 않는 사용자입니다.");
+                            return
+                        }
+
+                        const id = parsed.handle;
+                        const solvenum = parsed.solvedCount;
+                        const rate = parsed.rating;
+                        const rank = parsed.rank;
+
+                        document.getElementById('user1-id').innerHTML = `${id}`;
+                        document.getElementById('user1-solve').innerHTML = `${solvenum}`;
+                        document.getElementById('user1-rating').innerHTML = `${rate}`;
+                        document.getElementById('user1-ranking').innerHTML = `${rank}`;
+
+                        displayResponse2();
+                    } catch (err) {
+                        alert("존재하지 않는 백준 아이디입니다.");
+                        console.error("에러 발생:", err);
+                        return
+                    }
+                }
+            });
+        
+        var xhr2 = new XMLHttpRequest();
+            xhr2.withCredentials = true;
+            xhr2.addEventListener("readystatechange", function () {
+                if (this.readyState === 4) {
+                    console.log(this.responseText);
+                    
+                    var parsed = JSON.parse(this.responseText);
+                    let bronze = 0
+                    for (let i = 0; i<5; i++) {
+                        bronze = bronze + parsed[i].solved
+                    }
+                    let silver = 0
+                    for (let i = 5; i<10; i++) {
+                        silver = silver + parsed[i].solved
+                    }
+                    let gold = 0
+                    for (let i = 10; i<15; i++) {
+                        gold = gold + parsed[i].solved
+                    }
+                    let platinum = 0
+                    for (let i = 15; i<20; i++) {
+                        platinum = platinum + parsed[i].solved
+                    }
+                    let diamond = 0
+                    for (let i = 20; i<25; i++) {
+                        diamond = diamond + parsed[i].solved
+                    }
+                    let ruby = 0
+                    for (let i = 25; i<30; i++) {
+                        ruby = ruby + parsed[i].solved
+                    }
+                    
+                    const Pie1 = document.getElementById('pieChart1').getContext('2d');
+                    new Chart(Pie1, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Ruby'],
+                            datasets: [{
+                                label: '문제 수',
+                                data: [bronze, silver, gold, platinum, diamond, ruby],
+                                backgroundColor: [
+                                    'rgb(173, 86, 0)',
+                                    'rgb(67, 95, 122)',
+                                    'rgb(236, 154, 0)',
+                                    'rgb(39, 226, 164)',
+                                    'rgb(0, 180, 252)',
+                                    'rgb(255, 0, 98)'
+                                ],
+                                borderWidth: 0.5
+                            }],
+                        },
+                        options: {
+                            plugins: {
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }
+                    });
+                    
+                }
+            });
+        
+        var xhr3 = new XMLHttpRequest();
+            xhr3.withCredentials = true;
+            xhr3.addEventListener("readystatechange", function () {
+                if (this.readyState === 4) {
+                    try {
+                        const parsed = JSON.parse(this.responseText);
+                        if (!parsed.handle) {
+                            throw new Error("존재하지 않는 사용자입니다.");
+                            return
+                        }
+
+                        const id = parsed.handle;
+                        const solvenum = parsed.solvedCount;
+                        const rate = parsed.rating;
+                        const rank = parsed.rank;
+
+                        document.getElementById('user2-id').innerHTML = `${id}`;
+                        document.getElementById('user2-solve').innerHTML = `${solvenum}`;
+                        document.getElementById('user2-rating').innerHTML = `${rate}`;
+                        document.getElementById('user2-ranking').innerHTML = `${rank}`;
+
+                        displayResponsePie1();
+                        displayResponsePie2();
+                    } catch (err) {
+                        alert("존재하지 않는 백준 아이디입니다.");
+                        console.error("에러 발생:", err);
+                        return
+                    }
+                }
+            });
+
+
+
+
+        var xhr4 = new XMLHttpRequest();
+            xhr4.withCredentials = true;
+            xhr4.addEventListener("readystatechange", function () {
+                if (this.readyState === 4) {
+                    console.log(this.responseText);
+                    
+                    var parsed = JSON.parse(this.responseText);
+                    let bronze = 0
+                    for (let i = 0; i<5; i++) {
+                        bronze = bronze + parsed[i].solved
+                    }
+                    let silver = 0
+                    for (let i = 5; i<10; i++) {
+                        silver = silver + parsed[i].solved
+                    }
+                    let gold = 0
+                    for (let i = 10; i<15; i++) {
+                        gold = gold + parsed[i].solved
+                    }
+                    let platinum = 0
+                    for (let i = 15; i<20; i++) {
+                        platinum = platinum + parsed[i].solved
+                    }
+                    let diamond = 0
+                    for (let i = 20; i<25; i++) {
+                        diamond = diamond + parsed[i].solved
+                    }
+                    let ruby = 0
+                    for (let i = 25; i<30; i++) {
+                        ruby = ruby + parsed[i].solved
+                    }
+                    
+                    const Pie2 = document.getElementById('pieChart2').getContext('2d');
+                    new Chart(Pie2, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Ruby'],
+                            datasets: [{
+                                label: '문제 수',
+                                data: [bronze, silver, gold, platinum, diamond, ruby],
+                                backgroundColor: [
+                                    'rgb(173, 86, 0)',
+                                    'rgb(67, 95, 122)',
+                                    'rgb(236, 154, 0)',
+                                    'rgb(39, 226, 164)',
+                                    'rgb(0, 180, 252)',
+                                    'rgb(255, 0, 98)'
+                                ],
+                                borderWidth: 0.5
+                            }],
+                        },
+                        options: {
+                            plugins: {
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }
+                    });
+                    
+                }
+
+                if (document.getElementById('user1-ranking').value < document.getElementById('user2-ranking').value) {
+                    document.getElementById('compare-left').style.backgroundColor = 'rgb(173, 238, 254)'
+                    document.getElementById('compare-right').style.backgroundColor = 'rgb(228, 84, 84)'
+                }
+                else {
+                    document.getElementById('compare-left').style.backgroundColor = 'rgb(228, 84, 84)'
+                    document.getElementById('compare-right').style.backgroundColor = 'rgb(173, 238, 254)'
+                }
+            });
+
+
+        function displayResponse1(){
+                var url = "http://localhost:3000/compareuser1"
+                var user1 = document.getElementById('user1').value
+                
+                if (!user1 || !user2) {
+                    alert("아이디를 입력해주세요")
+                    return
+                }
+
+                url = url + "?" + "user1="+user1
+                xhr1.open("GET", url);
+                xhr1.send();
+        
+            }
+
+        function displayResponsePie1() {
+            var url = "http://localhost:3000/compareuserpie1"
+                var user1 = document.getElementById('user1').value
+                
+                url = url + "?" + "user1="+user1
+                xhr2.open("GET", url);
+                xhr2.send();
+        }
+
+        function displayResponse2(){
+                var url = "http://localhost:3000/compareuser2"
+                var user2 = document.getElementById('user2').value
+                
+
+                if (!user1 || !user2) {
+                    alert("아이디를 입력해주세요")
+                    return
+                }
+
+                url = url + "?" + "&user2="+user2
+                xhr3.open("GET", url);
+                xhr3.send();
+        
+            }
+
+        function displayResponsePie2() {
+            var url = "http://localhost:3000/compareuserpie2"
+                var user2 = document.getElementById('user2').value
+                
+                url = url + "?" + "&user2="+user2
+                xhr4.open("GET", url);
+                xhr4.send();
+        }
+
+
+        
+        
+    </script>
+</body>
+</html>

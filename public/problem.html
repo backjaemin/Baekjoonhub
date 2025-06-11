@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baekjoon Hub</title>
+    <link rel="stylesheet" href="problem.css">
+    <link rel="stylesheet" href="nav.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="wrap">
+        <header>
+            <div class="team-count">
+                <label for="count">팀원의 수를 입력해주세요! :</label>
+                <input class="team-count-input" id="count" type="number" min="1" max="10" />
+                <button class="team-count-btn" id="generate" onclick="generate()">팀원ID입력하기</button>
+            </div>
+            <hr>
+            <form>
+                <div class="inputs" id="inputs">
+                </div>
+
+                <hr>
+                <div class="choices">
+                    <label for="tier">원하는 문제의 티어를 선택해주세요!</label>
+                    <label style="color: rgb(173, 86, 0);" ><input type="radio" name="tier" value="b" checked="checked"/> Bronze</label>
+                    <label style="color: rgb(67, 95, 122);"><input type="radio" name="tier" value="s" /> Silver</label>
+                    <label style="color: rgb(236, 154, 0);"><input type="radio" name="tier" value="g" /> Gold</label>
+                    <label style="color: rgb(39, 226, 164);"><input type="radio" name="tier" value="p" /> Platinum</label>
+                    <label style="color: rgb(0, 180, 252);"><input type="radio" name="tier" value="d" /> Diamond</label>
+                    <label style="color: rgb(255, 0, 98);"><input type="radio" name="tier" value="r" /> Ruby</label>
+                    <button class="submit-btton" type="button" id="submitForm" onclick="displayResponse()">문제찾기</button>
+                </div>
+            </form>
+        </header>
+
+        <table id="table">
+        </table>
+
+        <nav>
+            <div class="nav-mid" style="background-color: rgb(130, 130, 142);" onclick="location.href='problem.html'">
+                문제찾기
+            </div>
+            <div class="nav-mid" onclick="location.href='strick.html'">
+                잔디보기
+            </div>
+            <div class="nav-right" onclick="location.href='compare.html'">
+                비교하기
+            </div>
+            
+        </nav>
+    </div>
+    
+    
+    <script>
+
+        const countInput = document.getElementById('count');
+        const inputsContainer = document.getElementById('inputs');
+
+        function generate() {
+
+            inputsContainer.innerHTML = '';
+            const n = parseInt(countInput.value, 10);
+            if (!n || n < 1) {
+                alert("1이상, 10이하의 숫자를 입력해주세요.")
+                return;
+            }
+
+            for (let i = 1; i <= n; i++) {
+                const div = document.createElement('div');
+                div.className = 'field';
+                div.innerHTML = `<label>팀원 ${i}: <input type="text" name="item${i}" /></label>`;
+                inputsContainer.appendChild(div);
+            }
+        };
+
+            var xhr = new XMLHttpRequest();
+            xhr.withCredentials = true;
+            xhr.addEventListener("readystatechange", function () {
+                if (this.readyState === 4) {
+                    console.log(this.responseText);
+
+                    var tb = document.getElementById('table');
+                    tb.innerHTML = "<tr><th>문제번호</th><th>제목</th><th>난이도</th><th>맞힌사람</th></tr>";
+        
+                    var parsed = JSON.parse(this.responseText);
+                    let cnt = 1
+                    let temp = 0
+                    
+                    while(cnt <= 10 && temp < parsed.items.length){
+                        const item = parsed.items[temp];
+                        const hasKo = item.titles.some(t => t.language === "ko");
+
+                        if (hasKo) {
+                            const number = item.problemId;
+                            const name = item.titleKo;
+                            const level = item.level;
+                            const solvenumber = item.acceptedUserCount;
+
+                            tb.innerHTML += `
+                                <tr>
+                                    <td><a href="https://www.acmicpc.net/problem/${number}" target="_blank">${number}</a></td>
+                                    <td>${name}</td>
+                                    <td><img style="width: 30px; height: 50px;" src="./img/${level}.svg"></td>
+                                    <td>${solvenumber}</td>
+                                </tr>
+                            `;
+
+                            cnt++;
+                        }
+
+                        temp++;
+                    }
+
+                }
+            });
+            
+            function displayResponse(){
+                
+                var url = "http://localhost:3000/problemget"
+                var values = Array.from(inputsContainer.querySelectorAll('input[type="text"]')).map(inp => inp.value);
+                var tier = document.querySelector('input[name="tier"]:checked').value;
+                
+
+                if (values.length === 0) {
+                    alert("ID를 입력해주세요")
+                    return
+                }
+
+                for(let i = 0; i<values.length; i++){
+                    if (values[i] === "") {
+                        alert("ID를 입력해주세요")
+                        return
+                    }
+                }
+
+                url = url + "?" + "values="+values +"&tier="+tier
+                xhr.open("GET", url);
+                xhr.send();
+        
+            }
+  </script>
+
+        
+
+</body>
+</html>

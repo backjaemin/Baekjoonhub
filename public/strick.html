@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baekjoon Hub</title>
+    <link rel="stylesheet" href="strick.css">
+    <link rel="stylesheet" href="nav.css">
+</head>
+
+<body>
+    <div class="wrap">
+        <form action="">
+            <div class="baekjoon-wrap">
+                <label for="count">백준아이디를 입력해주세요! :</label>
+                <input class="" id="baekjoonid" type="text"/>
+            </div>
+            
+    
+            <hr>
+
+
+            <div class="github-wrap">
+                <label for="count">깃허브아이디를 입력해주세요! :</label>
+                <input class="github-id" id="githubid" type="text" placeholder="깃허브아이디가 없다면 아이디를 입력하지 않아도 무관합니다." />
+                <input class="strick-submit" type="button" value="잔디심기 생성" onclick="displayResponse()">
+            </div>
+        </form>
+        <hr style="width: 100%;">
+        <div class="strick-wrap">
+            <div id="strick-div" style="width: 100%; height: 500px;">
+
+            </div>
+        
+            <div class="strick-boxes">
+                <div class="box" style="background-color: rgb(153, 153, 153);" id="box-warm" onclick="toggleStrick('Warm')">Warm</div>
+                <div class="box" id="box-cold" onclick="toggleStrick('Cold')">Cold</div>
+                <div class="box" id="box-dark" onclick="toggleStrick('Dark')">Dark</div>
+            </div>
+        </div>
+
+        <hr style="width: 100%;">
+
+        <div class="frame-div" id="frame-div">
+            
+        </div>
+    
+        <nav>
+            <div class="nav-mid" onclick="location.href='problem.html'">
+                문제찾기
+            </div>
+            <div class="nav-mid" style="background-color: rgb(130, 130, 142);" onclick="location.href='strick.html'">
+                잔디보기
+            </div>
+            <div class="nav-right" onclick="location.href='compare.html'">
+                비교하기
+            </div>
+        </nav>
+    </div>
+<script>
+    function displayResponse() {
+        const baekjoonid = document.getElementById("baekjoonid").value;
+        document.getElementById('strick-div').innerHTML = `<img id="strick" style="width: 100%; height: 500px;" src="http://mazandi.herokuapp.com/api?handle=${baekjoonid}&theme=warm" alt="백준 잔디 프로필" />`;
+        const githubid = document.getElementById("githubid").value;
+        if (githubid) {
+            document.getElementById('frame-div').innerHTML = `<iframe src="https://ghchart.rshah.org/${githubid}" frameborder="0"></iframe>`
+        }
+    }
+
+    function toggleStrick(type) {
+        const baekjoonid =document.getElementById("baekjoonid").value;
+        if (type === 'Warm') {
+            document.getElementById("strick").src = `http://mazandi.herokuapp.com/api?handle=${baekjoonid}&theme=warm`;
+            document.getElementById("box-warm").style.backgroundColor = 'rgb(153, 153, 153)';
+            document.getElementById("box-cold").style.backgroundColor = 'rgb(255,255,255)';
+            document.getElementById("box-dark").style.backgroundColor = 'rgb(255,255,255)';
+        } else if (type === 'Cold') {
+            document.getElementById("strick").src = `http://mazandi.herokuapp.com/api?handle=${baekjoonid}&theme=cold`;
+            document.getElementById("box-warm").style.backgroundColor = 'rgb(255,255,255)';
+            document.getElementById("box-cold").style.backgroundColor = 'rgb(153, 153, 153)';
+            document.getElementById("box-dark").style.backgroundColor = 'rgb(255,255,255)';
+        } else if (type === 'Dark') {
+            document.getElementById("strick").src = `http://mazandi.herokuapp.com/api?handle=${baekjoonid}&theme=dark`;
+            document.getElementById("box-warm").style.backgroundColor = 'rgb(255,255,255)';
+            document.getElementById("box-cold").style.backgroundColor = 'rgb(255,255,255)';
+            document.getElementById("box-dark").style.backgroundColor = 'rgb(153, 153, 153)';
+        }
+    }
+</script>
+</body>
+</html>
